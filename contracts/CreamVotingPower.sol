@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "../interfaces/IBPool.sol";
+import "../interfaces/ILPool.sol";
+import "../interfaces/ICToken.sol";
 import "../interfaces/IMasterChef.sol";
 import "../interfaces/IUniswapV2Pair.sol";
-import "../interfaces/ICDelegator.sol";
-import "../interfaces/ILPool.sol";
 
 contract CreamVotingPower {
     using SafeMath for uint256;
@@ -97,7 +97,10 @@ contract CreamVotingPower {
             "VotingPower.lendingSupply: Zero Address"
         );
 
-        return ICDelegator(crCream).balanceOf(_holder);
+        uint256 totalLending = ICToken(crCream).balanceOf(_holder) * ICToken(crCream).exchangeRateStored() / 1e18;
+        uint256 borrowed = ICToken(crCream).borrowBalanceStored(_holder);
+
+        return totalLending.sub(borrowed);
     }
 
     /**
@@ -174,6 +177,6 @@ contract CreamVotingPower {
             "VotingPower.lendingSupply: Zero Address"
         );
 
-        return ICDelegator(crCream).borrowBalanceStored(_holder);
+        return ICToken(crCream).borrowBalanceStored(_holder);
     }
 }
