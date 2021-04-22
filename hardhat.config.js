@@ -1,8 +1,8 @@
-require("@nomiclabs/hardhat-waffle");
+require('@nomiclabs/hardhat-waffle');
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async () => {
+task('accounts', 'Prints the list of accounts', async () => {
   const accounts = await ethers.getSigners();
 
   for (const account of accounts) {
@@ -17,12 +17,25 @@ task("accounts", "Prints the list of accounts", async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.7.3",
+  solidity: {
+    version: '0.6.12',
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 999999,
+      },
+    },
+  },
   networks: {
+    coverage: {
+      url: 'http://localhost:7545',
+      gas: 20000000,
+    },
     hardhat: {
       forking: {
-        url: "https://ethnode.steaker.capital/"
-      }
-    }
-  }
+        url:
+          'https://eth-mainnet.alchemyapi.io/v2/GnwOJqA7LugQQT1FB-d5Sl4xjbRmP_bx',
+      },
+    },
+  },
 };
