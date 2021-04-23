@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "../interfaces/IBPool.sol";
 import "../interfaces/ILPool.sol";
 import "../interfaces/ICToken.sol";
+import "../interfaces/ISetToken.sol";
 import "../interfaces/IMasterChef.sol";
 import "../interfaces/IUniswapV2Pair.sol";
 
@@ -31,6 +32,7 @@ contract CreamVotingPower {
         uint256 rewardDebt;
     }
 
+    address public constant defiPulse = 0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b;
     address public constant cream = 0x2ba592F78dB6436527729929AAf6c908497cB200;
     address public constant crCream =
         0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0;
@@ -49,24 +51,17 @@ contract CreamVotingPower {
     address public constant balancer =
         0x280267901C175565C64ACBD9A3c8F60705A72639;
 
-    uint256 public MINIMUM_VOTING_POWER = 1;
+    uint256 public MINIMUM_VOTING_POWER = 1e18;
 
-    function getVotingPower(address _holder) public view returns (uint256) {
+    function balanceOf(address _holder) public view returns (uint256) {
         require(_holder != address(0), "VotingPower.getVotingPower: Zero Address");
         uint256 votingPower =
             _creamBalance(_holder)
-                .add(_lendingSupply(_holder))
-                .add(_sushiswapBalance(_holder))
-                .add(_uniswapBalance(_holder))
-                .add(_balancerBalance(_holder))
-                .add(_stakedInLPool(_holder))
+                .add(_addThreeUnites(_lendingSupply(_holder), _sushiswapBalance(_holder), _uniswapBalance(_holder)))
+                .add(_addThreeUnites(_balancerBalance(_holder), _stakedInLPool(_holder), _defiPulseBalance(_holder)))
                 .sub(_borrowedBalance(_holder));
 
-        require(
-            votingPower > MINIMUM_VOTING_POWER,
-            "VotingPower.getVotingPower: Invalid"
-        );
-        return votingPower;
+        return votingPower >= MINIMUM_VOTING_POWER ? votingPower : 0;
     }
 
     /////////////////////////
@@ -97,7 +92,7 @@ contract CreamVotingPower {
             "VotingPower.lendingSupply: Zero Address"
         );
 
-        uint256 totalLending = ICToken(crCream).balanceOf(_holder) * ICToken(crCream).exchangeRateStored() / 1e18;
+        uint256 totalLending = ICToken(crCream).balanceOf(_holder).mul(ICToken(crCream).exchangeRateStored()).div(1e18);
         uint256 borrowed = ICToken(crCream).borrowBalanceStored(_holder);
 
         return totalLending.sub(borrowed);
@@ -178,5 +173,30 @@ contract CreamVotingPower {
         );
 
         return ICToken(crCream).borrowBalanceStored(_holder);
+    }
+
+    /**
+     @notice CREAM in Cream Pulse
+     @param _holder Address of holder
+     @return uint256 The cream token amount
+    */
+    function _defiPulseBalance(address _holder) internal view returns (uint256) {
+        require(
+            _holder != address(0),
+            "VotingPower.lendingSupply: Zero Address"
+        );
+
+        return ISetToken(defiPulse).balanceOf(_holder).mul(ISetToken(defiPulse).getTotalComponentRealUnits(cream)).div(1e18);
+    }
+
+    /**
+     @notice Add three unites
+     @param a uint256
+     @param b uint256
+     @param c uint256
+     @return uint256 sum of three uint256 variables
+    */
+    function _addThreeUnites(uint256 a, uint256 b, uint256 c) private pure returns (uint256) {
+        return a.add(b).add(c);
     }
 }

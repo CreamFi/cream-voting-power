@@ -25,7 +25,7 @@ async function main() {
 
   for (let i = 0; i < addresses.length; i++) {
     try {
-      const response = await VotingPower.getVotingPower(addresses[i]);
+      const response = await VotingPower.balanceOf(addresses[i]);
       console.log(`=========${addresses[i]}=========\n${response}`);
     } catch (err) {
       console.log('error:', err);
