@@ -32,7 +32,7 @@ contract CreamVotingPower {
         uint256 rewardDebt;
     }
 
-    address public constant defiPulse = 0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b;
+    address public constant defiPulseIndex = 0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b;
     address public constant cream = 0x2ba592F78dB6436527729929AAf6c908497cB200;
     address public constant crCream =
         0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0;
@@ -95,6 +95,10 @@ contract CreamVotingPower {
         uint256 totalLending = ICToken(crCream).balanceOf(_holder).mul(ICToken(crCream).exchangeRateStored()).div(1e18);
         uint256 borrowed = ICToken(crCream).borrowBalanceStored(_holder);
 
+        if (borrowed > totalLending) {
+            return 0;
+        }
+
         return totalLending.sub(borrowed);
     }
 
@@ -155,7 +159,7 @@ contract CreamVotingPower {
         uint256 totalStaked = 0;
 
         for (uint256 i = 0; i < 4; i++) {
-            totalStaked.add(ILPool(lPool[i]).balanceOf(_holder));
+            totalStaked = totalStaked.add(ILPool(lPool[i]).balanceOf(_holder));
         }
 
         return totalStaked;
@@ -186,7 +190,7 @@ contract CreamVotingPower {
             "VotingPower.lendingSupply: Zero Address"
         );
 
-        return ISetToken(defiPulse).balanceOf(_holder).mul(ISetToken(defiPulse).getTotalComponentRealUnits(cream)).div(1e18);
+        return ISetToken(defiPulseIndex).balanceOf(_holder).mul(ISetToken(defiPulseIndex).getTotalComponentRealUnits(cream)).div(1e18);
     }
 
     /**
