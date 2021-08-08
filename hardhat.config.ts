@@ -15,7 +15,7 @@ export default {
     hardhat: {
       forking: {
         url: "https://mainnet-eth.compound.finance/",
-        blockNumber: 12301775
+        blockNumber: 12985524
       }
     }
   },

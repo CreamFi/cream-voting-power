@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "../interfaces/ILPool.sol";
+import "../interfaces/IIceCream.sol";
 
 contract CreamVotingPower {
     using Address for address payable;
@@ -20,10 +21,25 @@ contract CreamVotingPower {
 
     function balanceOf(address _holder) public view returns (uint256) {
         require(_holder != address(0), "VotingPower.getVotingPower: Zero Address");
-        uint256 votingPower = _stakedInLPool(_holder);
+        uint256 votingPower = _stakedInIceCream(_holder) + _stakedInLPool(_holder);
 
         return votingPower >= MINIMUM_VOTING_POWER ? votingPower : 0;
     }
+
+    /**
+     @notice CREAM staked in ice cream
+     @param _holder Address of holder
+     @return uint256 The cream token amount
+    */
+    function _stakedInIceCream(address _holder) internal view returns (uint256) {
+        require(
+            _holder != address(0),
+            "VotingPower.lendingSupply: Zero Address"
+        );
+
+        return IIceCream(iceCream).balanceOf(_holder);
+    }
+
 
     /**
      @notice CREAM staked in long-term pools
