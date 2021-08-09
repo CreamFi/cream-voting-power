@@ -62,12 +62,12 @@ contract CreamVotingPower {
             uint256 releaseTime = ILPool(lPool[i]).releaseTime();
             uint256 currentTime = block.timestamp;
             uint256 lockTime = year * (i + 1);
-
             if (currentTime >= releaseTime) {
                 return 0;
             }
+            uint balanceRemained = (balance * 1e18 / lockTime) * (releaseTime - currentTime) / 1e18;
 
-            totalStaked = totalStaked + (balance * 1e18 / lockTime) * (releaseTime - currentTime) / 1e18;
+            totalStaked = totalStaked + balanceRemained;
         }
 
         return totalStaked;
