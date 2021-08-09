@@ -67,7 +67,7 @@ contract CreamVotingPower {
                 return 0;
             }
 
-            totalStaked = totalStaked + (balance / lockTime) * (releaseTime - currentTime);
+            totalStaked = totalStaked + (balance * 1e18 / lockTime) * (releaseTime - currentTime) / 1e18;
         }
 
         return totalStaked;
