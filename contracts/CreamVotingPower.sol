@@ -40,6 +40,7 @@ contract CreamVotingPower {
         return IIceCream(iceCream).balanceOf(_holder);
     }
 
+    uint256 internal year = 31535999;
 
     /**
      @notice CREAM staked in long-term pools
@@ -55,9 +56,21 @@ contract CreamVotingPower {
         uint256 totalStaked = 0;
 
         for (uint256 i = 0; i < 4; i++) {
-            totalStaked = totalStaked + ILPool(lPool[i]).balanceOf(_holder);
+            uint256 balance = ILPool(lPool[i]).balanceOf(_holder);
+
+            // calculate voting power in proportion to remaining lock time
+            uint256 releaseTime = ILPool(lPool[i]).releaseTime();
+            uint256 currentTime = block.timestamp;
+            uint256 lockTime = year * (i + 1);
+
+            if (currentTime >= releaseTime) {
+                return 0;
+            }
+
+            totalStaked = totalStaked + (balance / lockTime) * (releaseTime - currentTime);
         }
 
         return totalStaked;
     }
+
 }
