@@ -40,7 +40,7 @@ contract CreamVotingPower {
         return IIceCream(iceCream).balanceOf(_holder);
     }
 
-    uint256 internal year = 31535999;
+    uint256 internal year = 31536000;
 
     /**
      @notice CREAM staked in long-term pools
