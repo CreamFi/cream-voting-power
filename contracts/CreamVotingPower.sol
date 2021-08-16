@@ -19,7 +19,17 @@ contract CreamVotingPower {
 
     uint256 public MINIMUM_VOTING_POWER = 1e18;
 
-    function balanceOf(address _holder) public view returns (uint256) {
+    uint256 internal year = 31536000;
+
+    modifier isValidAddress(address wallet) {
+        require(
+            wallet != address(0),
+            "VotingPower.lendingSupply: Zero Address"
+        );
+        _;
+    }
+
+    function balanceOf(address _holder) public view isValidAddress(_holder) returns (uint256) {
         require(_holder != address(0), "VotingPower.getVotingPower: Zero Address");
         uint256 votingPower = _stakedInIceCream(_holder) + _stakedInLPool(_holder);
 
@@ -32,15 +42,8 @@ contract CreamVotingPower {
      @return uint256 The cream token amount
     */
     function _stakedInIceCream(address _holder) internal view returns (uint256) {
-        require(
-            _holder != address(0),
-            "VotingPower.lendingSupply: Zero Address"
-        );
-
         return IIceCream(iceCream).balanceOf(_holder);
     }
-
-    uint256 internal year = 31536000;
 
     /**
      @notice CREAM staked in long-term pools
@@ -48,11 +51,6 @@ contract CreamVotingPower {
      @return uint256 The cream token amount
     */
     function _stakedInLPool(address _holder) internal view returns (uint256) {
-        require(
-            _holder != address(0),
-            "VotingPower.lendingSupply: Zero Address"
-        );
-
         uint256 totalStaked = 0;
 
         for (uint256 i = 0; i < 4; i++) {
@@ -72,5 +70,4 @@ contract CreamVotingPower {
 
         return totalStaked;
     }
-
 }
