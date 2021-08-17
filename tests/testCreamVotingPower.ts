@@ -1,5 +1,6 @@
 import { ethers } from "hardhat";
-import { expect } from "chai";
+import { expect } from 'chai'
+
 
 const addresses = [
   "0xeB8A4eADd643Ea3873dfecFBa18BD709D3206919",
@@ -60,5 +61,10 @@ describe("Token", function () {
       console.log(votingPower.toString());
       expect(votingPower).equals(expectedVotingPower[i]);
     }
+  });
+  it("zero address error", async function () {
+    await expect(
+      creamVotingPower.balanceOf("0x0000000000000000000000000000000000000000")
+    ).to.be.revertedWith("VotingPower: Zero Address");
   });
 });
