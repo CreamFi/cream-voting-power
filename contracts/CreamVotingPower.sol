@@ -28,7 +28,7 @@ contract CreamVotingPower {
     modifier isValidAddress(address wallet) {
         require(
             wallet != address(0),
-            "VotingPower.lendingSupply: Zero Address"
+            "VotingPower: Zero Address"
         );
         _;
     }
