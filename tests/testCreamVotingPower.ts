@@ -31,7 +31,7 @@ const expectedVotingPower = [
   ethers.BigNumber.from("0"),
   ethers.BigNumber.from("36299103120671021478"),
   ethers.BigNumber.from("0"),
-  ethers.BigNumber.from("4965838861048357431"),
+  ethers.BigNumber.from("4964545440271829987"),
   ethers.BigNumber.from("0"),
   ethers.BigNumber.from("0"),
   ethers.BigNumber.from("0"),

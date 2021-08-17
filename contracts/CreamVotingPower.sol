@@ -17,9 +17,13 @@ contract CreamVotingPower {
         address(0xE618C25f580684770f2578FAca31fb7aCB2F5945)
     ];
 
-    uint256 public MINIMUM_VOTING_POWER = 1e18;
+    uint256 internal day = 86400;
 
-    uint256 internal year = 31536000;
+    uint[] internal lPoolLockTime = [
+        day*365, day*730, day*1095, day*1461
+    ];
+
+    uint256 public MINIMUM_VOTING_POWER = 1e18;
 
     modifier isValidAddress(address wallet) {
         require(
@@ -30,7 +34,6 @@ contract CreamVotingPower {
     }
 
     function balanceOf(address _holder) public view isValidAddress(_holder) returns (uint256) {
-        require(_holder != address(0), "VotingPower.getVotingPower: Zero Address");
         uint256 votingPower = _stakedInIceCream(_holder) + _stakedInLPool(_holder);
 
         return votingPower >= MINIMUM_VOTING_POWER ? votingPower : 0;
@@ -59,11 +62,10 @@ contract CreamVotingPower {
             // calculate voting power in proportion to remaining lock time
             uint256 releaseTime = ILPool(lPool[i]).releaseTime();
             uint256 currentTime = block.timestamp;
-            uint256 lockTime = year * (i + 1);
             if (currentTime >= releaseTime) {
                 return 0;
             }
-            uint balanceRemained = (balance * 1e18 / lockTime) * (releaseTime - currentTime) / 1e18;
+            uint balanceRemained = (balance * 1e18 / lPoolLockTime[i]) * (releaseTime - currentTime) / 1e18;
 
             totalStaked = totalStaked + balanceRemained;
         }
