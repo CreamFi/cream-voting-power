@@ -17,10 +17,8 @@ contract CreamVotingPower {
         address(0xE618C25f580684770f2578FAca31fb7aCB2F5945)
     ];
 
-    uint256 internal day = 86400;
-
     uint[] internal lPoolLockTime = [
-        day*365, day*730, day*1095, day*1461
+        365 days, 730 days, 1095 days, 1461 days
     ];
 
     uint256 public MINIMUM_VOTING_POWER = 1e18;
